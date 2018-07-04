@@ -189,7 +189,7 @@ public enum DataBaseType {
 
     /**
      * 注意：实现了从 mysql中识别出数据库信息.未识别到则返回 null.
-     * @anthor yangzepeng
+     * @anthor yangzepeng //增量同步改造
      */
     public static String parseDataNameFromJdbcUrl(String jdbcUrl) {
         Matcher mysql = mysqlPattern.matcher(jdbcUrl);

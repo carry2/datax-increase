@@ -178,7 +178,7 @@ public class CommonRdbmsReader {
             String[] split = jdbcurl.split("\\?");
             String dataNameFromJdbcUrl = DataBaseType.parseDataNameFromJdbcUrl(split[0]);
             //开始处理增量列和where语句
-            //增量同步改造 where条件改为只传表名 后台拼接条件
+            //增量同步改造   where条件改为只传表名 后台拼接条件
             if(StringUtils.isNotBlank(increasecolumn)){
                 //根据数据库名称和表名从配置文件获取时间
                 String andUpTime = PropertiesUtil.getLastTime(dataNameFromJdbcUrl,table);

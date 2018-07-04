@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 
 public class FileUtil {
-	/**
+	/** //增量同步改造
 	 * 获取resource下面配置文件
 	 * @param path
 	 * @return

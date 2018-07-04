@@ -12,7 +12,7 @@ public class PropertiesUtil {
     private static Logger log = LoggerFactory.getLogger(PropertiesUtil.class);
      private static String TIMEPATH="/data/datax/plugin/reader/mysqlreader/time.properties";
     // private static String TIMEPATH="D://time.properties";
-
+        //增量同步改造
     static {
         File F=new File(TIMEPATH);
         try {

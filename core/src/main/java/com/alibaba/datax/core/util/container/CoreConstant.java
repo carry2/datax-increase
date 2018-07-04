@@ -70,6 +70,7 @@ public class CoreConstant {
 	public static final String DATAX_JOB_CONTENT_READER_NAME = "job.content[0].reader.name";
 
 	public static final String DATAX_JOB_CONTENT_READER_PARAMETER = "job.content[0].reader.parameter";
+	//增量同步改造
 	public static final String DATAX_JOB_CONTENT_READER_PARAMETER_INCREASECLOUMN = "job.content[0].reader.parameter.increasecloumn";
 	public static final String DATAX_JOB_CONTENT_READER_PARAMETER_CONNECTION_JDBCURL = "job.content[0].reader.parameter.jdbcUrl";
 	public static final String DATAX_JOB_CONTENT_READER_PARAMETER_CONNECTION_TABLE = "job.content[0].reader.parameter.table";

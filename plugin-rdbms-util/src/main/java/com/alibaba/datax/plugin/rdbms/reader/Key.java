@@ -16,7 +16,7 @@ public final class Key {
 
     // 是数组配置
     public final static String COLUMN = "column";
-
+    //增量同步改造
     public final static String INCREASECOLUMN = "increasecloumn";
     
     public final static String COLUMN_LIST = "columnList";

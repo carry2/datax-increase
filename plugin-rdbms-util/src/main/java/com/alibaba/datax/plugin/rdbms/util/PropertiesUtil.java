@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+//增量同步改造
 public class PropertiesUtil {
     public static Properties constantPro;
     private static Logger log = LoggerFactory.getLogger(PropertiesUtil.class);
