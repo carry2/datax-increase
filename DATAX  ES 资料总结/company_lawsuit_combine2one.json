@@ -1,0 +1,68 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "connection": [
+                            {
+                                "jdbcUrl": [
+                                    "jdbc:mysql://223.71.128.110:18506/db2_prism1"
+                                ],
+                                "querySql": [
+                                    "select id, concat_ws('|', title, plaintext, party) as content from company_lawsuit;"
+                                ]
+                            }
+                        ],
+                        "increasecloumn": "",
+                        "password": "8CqBCOdvTexhDkih",
+                        "username": "outsource_read",
+                        "where": ""
+                    }
+                },
+                "writer": {
+                    "name": "elasticsearchwriter",
+                    "parameter": {
+                        "accessId": "1",
+                        "accessKey": "1",
+                        "batchSize": 1000,
+                        "cleanup": true,
+                        "column": [
+                            {
+                                "name": "id",
+                                "type": "id"
+                            },
+                            {
+                                "name": "content",
+                                "type": "text"
+                            }
+                        ],
+                        "discovery": false,
+                        "endpoint": "http://192.168.0.184:9200",
+                        "ignoreWriteError": true,
+                        "index": "lawsuitcult_one_field_index",
+                        "settings": {
+                            "index": {
+                                "number_of_replicas": "1",
+                                "number_of_shards": "10",
+                                "refresh_interval": "30s",
+                                "translog": {
+                                    "durability": "async",
+                                    "flush_threshold_size": "1g"
+                                }
+                            }
+                        },
+                        "type": "docs"
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": "10",
+                "record": 1000
+            }
+        }
+    }
+}

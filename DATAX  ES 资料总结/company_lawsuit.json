@@ -1,0 +1,89 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "column": [
+                            "id",
+                            "title",
+                            "plaintext",
+                            "party",
+                            "cv_id"
+                        ],
+                        "connection": [
+                            {
+                                "jdbcUrl": [
+                                    "jdbc:mysql://223.71.128.110:18506/db2_prism1"
+                                ],
+                                "table": [
+                                    "company_lawsuit"
+                                ]
+                            }
+                        ],
+                        "increasecloumn": "",
+                        "password": "8CqBCOdvTexhDkih",
+                        "username": "outsource_read",
+                        "where": "id > 11760000"
+                    }
+                },
+                "writer": {
+                    "name": "elasticsearchwriter",
+                    "parameter": {
+                        "accessId": "1",
+                        "accessKey": "1",
+                        "batchSize": 2000,
+                        "cleanup": false,
+                        "column": [
+                            {
+                                "name": "id",
+                                "type": "id"
+                            },
+                            {
+                                "name": "title",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content",
+                                "type": "text"
+                            },
+                            {
+                                "name": "party",
+                                "type": "text"
+                            },
+                            {
+                                "name": "cv_id",
+                                "type": "long",
+                                "index": false
+                            }
+                        ],
+                        "discovery": false,
+                        "endpoint": "http://192.168.0.184:9200",
+                        "ignoreWriteError": true,
+                        "index": "lawsuitcult_index",
+                        "settings": {
+                            "index": {
+                                "codec": "best_compression",
+                                "number_of_replicas": "1",
+                                "number_of_shards": "10",
+                                "refresh_interval": "30s",
+                                "translog": {
+                                    "durability": "async",
+                                    "flush_threshold_size": "1g"
+                                }
+                            }
+                        },
+                        "type": "docs"
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": "10",
+                "record": 2000
+            }
+        }
+    }
+}

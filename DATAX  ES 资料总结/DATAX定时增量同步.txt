@@ -1,0 +1,108 @@
+注：本文默认datax环境搭建完毕  ES搭建完毕  可以正常运行
+一、从Mysql到Elasticsearch 数据定时增量同步配置
+    Datax 目前支持Elasticsearch 数据同步 有elasticsearchwriter 插件
+1.down代码重新打包 替换指定jar包 
+修改后代码的git地址  ssh://git@192.168.2.220:10022/tyc/datax.git
+代码更改了 datax-core  plugin-rdbms-util 两个模块 需要把代码 down下来 把两个模块重新打包  使用maven package 打包 maven版本不低于3.0
+将 datax/lib/ 文件夹下的datax-core-0.0.1-SNAPSHOT.jar 替换为新的jar包
+将 datax/plugin/reader/mysqlreader/libs 文件夹下的plugin-rdbms-util-0.0.1-SNAPSHOT.jar 替换为新的jar包
+
+2.定义job.json  完整例子如下
+	{
+	    "job": {
+		"content": [
+		    {
+			"reader": {
+			    "name": "mysqlreader",
+			    "parameter": {
+				"column": ["id","ipo_count"],
+				"connection": [
+				    {
+					"jdbcUrl": ["jdbc:mysql://192.168.0.68:3306/datacenter_online"],
+					"table": ["cmp_tags_event"]
+				    }
+				],
+				"password": "VYxIgZY4FhHFmPvG",
+				"username": "cvs",
+				"where": "update_time is not null",
+				"increasecloumn":"update_time"
+			    }
+			},
+			"writer": {
+			    "name": "elasticsearchwriter",
+			    "parameter": {
+				"accessId": "1",
+				"accessKey": "1",
+				"batchSize": 100,
+				"cleanup": false,
+				"column": [
+				   {
+					"name": "id",
+					"type": "id"
+				    },
+
+				    {
+					"name": "ipo_count",
+					"type": "long"
+				    }
+				],
+				"discovery": true,
+				"endpoint": "http://127.0.0.1:9200",
+				"index": "company_index",
+				"type": "tyc_info"
+			    }
+			}
+		    }
+		],
+		"setting": {
+		    "speed": {
+			"channel": "10"
+		    }
+		}
+	    }
+	}
+	对于定时自动增量同步datax没有给出解决方案
+	定时自动增量同步需要一个变量作为增量的依据
+	通过对mysqlreader的改造 增加了参照列  increasecloumn 来指定当前表的那一列作为参照
+3、查看代码中time.properties 文件的路径 新建 time.properties     
+	所在类为 模块 datax-core 下的  com.alibaba.datax.core.util.PropertiesUtil
+	 private static String TIMEPATH="/data/datax/plugin/reader/mysqlreader/time.properties";
+	代码中暂时定义为当前路径 需要更改可以更改代码 然后从新打包 把datax/lib/ 文件夹下的datax-core-0.0.1-SNAPSHOT.jar 重新替换即可
+	在/data/datax/plugin/reader/mysqlreader 路径下新建文件time.properties
+	不需要维护key值 代码会自动生成键值和时间 库名/表名/lasttime和库名/表名/secondtime
+
+	库名/表名/lasttime为最后一次时间 库名/表名/secondtime为上传时间 
+	系统以库名/表名/lasttime为参照时间
+	如果没有对应的键值 默认第一次库名/表名/lasttime是0 系统会全量加载
+	每次执行完job会替换lasttime为当前时间
+
+	注意：key值按照 库名/表名  的规则生成  
+	如果有不同服务器上相同的数据库名和表名设置定时增量任务的极端情况要避免  会造成参照时间错乱
+4、设置定时任务
+
+	①.默认已安装crond服务
+	②.列出crontab文件，输入crontab -l
+	若显示以下内容 ，则表示当前用户没有定时任务（xxx表示当前用户），需要创建crontab文件，并提交，查看步骤③
+	no crontal for xxx
+	若显示类似以下内容 ，则表示当前用户已经有正在运行的定时任务，只需输入crontab -e 来编辑crontab文件，查看步骤④
+	0,10,20,35,44,50 * * * * python /home/admin/datax3/bin/datax.py /home/admin/mysql2odps.json >>/home/hanfa.shf/log.`date +\%Y\%m\%d\%H\%M\%S`  2>&1，
+	③.创建crontab文件(以前从未创建过crontab任务)
+	创建一个名为crondatax的crontab文件，命令行进入到相应的目录   vi crondatax，创建并打开文件，输入以下内容：
+	5 13 * * *  python /data/datax/bin/datax.py  /data/datax/job/job.json  >>/home/hanfa.shf/log.`date +\%Y\%m\%d\%H\%M\%S`  2>&1
+	
+	5 13 * * *表示每天的13点5分执行这个任务 定时策略自行设定。
+	/data/datax/bin/datax.py表示安装的DataX datax.py所在的目录的绝对路径，一般在datax/bin/目录下
+	/data/datax/job/job.json表示作业配置文件的绝对路径
+	/home/hanfa.shf/log.`date +\%Y\%m\%d\%H\%M\%S`表示任务运行时产生日志的输出路径，并以log.当前时间命名，要替换成真实存在的绝对路径
+	④.编辑已有crontab文件，修改或增加定时任务
+	输入crontab -e 打开任务配置文件。增加任务即可，格式和步骤③一致。
+
+	⑤.提交 crontab文件
+	输入crontab /data/datax/job/crondatax crondatax是步骤③中创建的文件的名称，如果终端所在目录就是crondatax文件所在目录，
+	可以直接输入crontab crondatax。
+	提交之后输入crontab -l 就能看到刚配置的任务。
+
+	⑥、重启crontab服务
+	输入
+	/sbin/service crond restart
+	在定时的时间到后，任务便开始执行，同时会在配置的log目录下生成对应的日志文件，在日志文件中可查看任务的运行情况。

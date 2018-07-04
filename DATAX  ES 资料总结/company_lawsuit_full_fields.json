@@ -1,0 +1,175 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "connection": [
+                            {
+                                "jdbcUrl": [
+                                    "jdbc:mysql://223.71.128.110:18506/db2_prism1"
+                                ],
+                                "querySql": [
+                                    "select id, uuid, docid, url, openlaw_seq, caseno, casetype, doctype, base, court, judgetime, submittime, head, partyInfo, lawsuit_record, fact, reason, result, tail, casereason, trialprocedure, legalbasis, isdelete, updatetime, crawledtime, crawle_source, cv_id, concat_ws('|', title, plaintext, party) as content from company_lawsuit;"
+                                ]
+                            }
+                        ],
+                        "increasecloumn": "",
+                        "password": "8CqBCOdvTexhDkih",
+                        "username": "outsource_read",
+                        "where": ""
+                    }
+                },
+                "writer": {
+                    "name": "elasticsearchwriter",
+                    "parameter": {
+                        "accessId": "1",
+                        "accessKey": "1",
+                        "batchSize": 1000,
+                        "cleanup": false,
+                        "column": [
+                            {
+                                "name": "id",
+                                "type": "id"
+                            },
+                            {
+                                "name": "uuid",
+                                "type": "text"
+                            },
+                            {
+                                "name": "docid",
+                                "type": "text"
+                            },
+                            {
+                                "name": "url",
+                                "type": "text"
+                            },
+                            {
+                                "name": "openlaw_seq",
+                                "type": "long"
+                            },
+                            {
+                                "name": "caseno",
+                                "type": "text"
+                            },
+                            {
+                                "name": "casetype",
+                                "type": "text"
+                            },
+                            {
+                                "name": "doctype",
+                                "type": "text"
+                            },
+                            {
+                                "name": "base",
+                                "type": "text"
+                            },
+                            {
+                                "name": "court",
+                                "type": "text"
+                            },
+                            {
+                                "name": "judgetime",
+                                "type": "text"
+                            },
+                            {
+                                "name": "submittime",
+                                "type": "text"
+                            },
+                            {
+                                "name": "head",
+                                "type": "text"
+                            },
+                            {
+                                "name": "partyInfo",
+                                "type": "text"
+                            },
+                            {
+                                "name": "lawsuit_record",
+                                "type": "text"
+                            },
+                            {
+                                "name": "fact",
+                                "type": "text"
+                            },
+                            {
+                                "name": "reason",
+                                "type": "text"
+                            },
+                            {
+                                "name": "result",
+                                "type": "text"
+                            },
+                            {
+                                "name": "tail",
+                                "type": "text"
+                            },
+                            {
+                                "name": "casereason",
+                                "type": "text"
+                            },
+                            {
+                                "name": "trialprocedure",
+                                "type": "text"
+                            },
+                            {
+                                "name": "legalbasis",
+                                "type": "text"
+                            },
+                            {
+                                "name": "isdelete",
+                                "type": "text"
+                            },
+                            {
+                                "name": "updatetime",
+                                "type": "text"
+                            },
+                            {
+                                "name": "crawledtime",
+                                "type": "text"
+                            },
+                            {
+                                "name": "crawle_source",
+                                "type": "text"
+                            },
+                            {
+                                "name": "cv_id",
+                                "type": "long"
+                            },
+                            {
+                                "name": "content",
+                                "type": "text",
+                                "analyzer": "ik_smart",
+                                "search_analyzer": "ik_smart",
+                                "doc_values": false
+                            }
+                        ],
+                        "discovery": false,
+                        "endpoint": "http://192.168.0.184:9200",
+                        "ignoreWriteError": true,
+                        "index": "lawsuitcult_full_fields_index",
+                        "settings": {
+                            "index": {
+                                "number_of_replicas": "1",
+                                "number_of_shards": "12",
+                                "refresh_interval": "10s",
+                                "translog": {
+                                    "durability": "async",
+                                    "flush_threshold_size": "1g"
+                                }
+                            }
+                        },
+                        "type": "docs"
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": "10",
+                "record": 1000
+            }
+        }
+    }
+}
